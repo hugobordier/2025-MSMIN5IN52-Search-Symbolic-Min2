@@ -25,22 +25,55 @@
 
     <h1 class="text-4xl font-bold mb-6">🔍 Wordle Solver Visualizer</h1>
 
-    <button id="runBtn" class="px-5 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">
-        ▶ Lancer le solveur
-    </button>
+    <div class="flex gap-4 mb-6">
+        <button id="dailyBtn" class="px-5 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">
+            🟦 Daily Wordle
+        </button>
+        <button id="randomBtn" class="px-5 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition">
+            🟩 Random Wordle
+        </button>
+        <button id="solveBtn" class="px-5 py-3 bg-purple-600 text-white rounded-lg shadow hover:bg-purple-700 transition">
+            ▶ Solve
+        </button>
+    </div>
 
-    <div id="output" class="mt-10 w-full max-w-xl space-y-6"></div>
+    <p id="currentWord" class="mb-4 text-gray-700 font-medium">Mot choisi: …</p>
+
+    <div id="output" class="mt-4 w-full max-w-xl space-y-6"></div>
 
     <script>
-        document.getElementById("runBtn").onclick = async () => {
+        let currentWordType = null; // 'daily' or 'random'
+        let currentWord = null;
+
+        async function fetchWord(type) {
+            const url = type === 'daily'
+                ? "http://127.0.0.1:5000/word-of-the-day"
+                : "http://127.0.0.1:5000/random-word";
+
+            const res = await fetch(url);
+            const data = await res.json();
+            currentWordType = type;
+            currentWord = data.word;
+            document.getElementById("currentWord").textContent = "Mot choisi: " + currentWord;
+        }
+
+        async function runSolver() {
+            if (!currentWordType) {
+                alert("Veuillez d'abord choisir Daily ou Random Wordle.");
+                return;
+            }
+
             const output = document.getElementById("output");
             output.innerHTML = "<p class='text-gray-600'>Solving…</p>";
 
-            const res = await fetch("http://localhost:5000/run");
+            const url = currentWordType === 'daily'
+                ? "http://127.0.0.1:5000/run-daily"
+                : "http://127.0.0.1:5000/run-random";
+
+            const res = await fetch(url);
             const data = await res.json();
 
             output.innerHTML = "";
-
             let delay = 0;
 
             data.steps.forEach(step => {
@@ -57,13 +90,20 @@
                         </div>
                         <p class="text-gray-600">Feedback : <b>${step.feedback}</b></p>
                     `;
-
                     output.appendChild(row);
                 }, delay);
 
                 delay += 800;
             });
-        };
+        }
+
+        // Event listeners
+        document.getElementById("dailyBtn").onclick = () => fetchWord('daily');
+        document.getElementById("randomBtn").onclick = () => fetchWord('random');
+        document.getElementById("solveBtn").onclick = runSolver;
+
+        // Auto-load daily word on page load
+        fetchWord('daily');
     </script>
 
 </body>

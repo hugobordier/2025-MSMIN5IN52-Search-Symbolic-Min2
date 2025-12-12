@@ -4,38 +4,46 @@ import os
 import webbrowser
 import time
 
-# Chemin vers requirements.txt
-requirements_path = os.path.join(os.getcwd(), "requirements.txt")
+ROOT_DIR = os.getcwd()
 
-print("🔹 Installation des dépendances depuis requirements.txt...")
+# ---------- Install dependencies ----------
+requirements_path = os.path.join(ROOT_DIR, "requirements.txt")
+print("🔹 Installing dependencies...")
 subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", requirements_path])
 
-print("🔹 Lancement du projet Wordle complet...")
+print("🔹 Starting Wordle Solver project...")
 
-# Lancer l'API Wordle (FastAPI)
-api_path = os.path.join("Api_wordle", "main.py")
-fastapi_proc = subprocess.Popen([sys.executable, api_path])
+# ---------- Start FastAPI (Api_wordle/main.py) ----------
+fastapi_cmd = [
+    sys.executable,
+    "-m",
+    "uvicorn",
+    "Api_wordle.main:app",
+    "--host", "127.0.0.1",
+    "--port", "5000",
+    "--reload"
+]
 
-# Lancer le solveur Flask (frontend)
-solveur_path = os.path.join("Solveur_wordle", "server.py")
-flask_proc = subprocess.Popen([sys.executable, solveur_path])
+fastapi_proc = subprocess.Popen(
+    fastapi_cmd,
+    cwd=ROOT_DIR
+)
 
-# Attendre que les serveurs démarrent
+# ---------- Wait for server ----------
 time.sleep(3)
 
-# Ouvrir le frontend
-frontend_path = os.path.join(os.getcwd(), "frontend", "index.html")
-webbrowser.open(f"file://{frontend_path}")
+# ---------- Open frontend ----------
+frontend_path = os.path.join(ROOT_DIR, "frontend", "index.html")
+webbrowser.open(f"file:///{frontend_path}")
 
-print("✅ Le frontend devrait s'ouvrir dans le navigateur.")
-print("💡 API Wordle: http://localhost:8000")
-print("💡 Solveur Flask: http://localhost:5000/run")
+print("\n✅ Project running!")
+print("🌐 Frontend: file:///" + frontend_path)
+print("🚀 API: http://127.0.0.1:5000")
+print("🛑 Press CTRL+C to stop\n")
 
-# Garder les serveurs actifs
+# ---------- Keep alive ----------
 try:
     fastapi_proc.wait()
-    flask_proc.wait()
 except KeyboardInterrupt:
-    print("\n❌ Arrêt des serveurs...")
+    print("\n❌ Shutting down...")
     fastapi_proc.terminate()
-    flask_proc.terminate()

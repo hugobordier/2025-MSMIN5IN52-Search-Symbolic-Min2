@@ -40,3 +40,6 @@ pip install flask-cors
 python server.py
 cd frontend
 python -m http.server 8000
+
+si pb avec api reload:
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload

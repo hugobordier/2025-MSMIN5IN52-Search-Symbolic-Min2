@@ -1,22 +1,18 @@
+import os
 import requests
 from collections import defaultdict, Counter
 
 ###########################################################
-# 1) WORDLE-KAPPA API (only using POST /{guess})
+# 1a) LOCAL WORD-OF-THE-DAY API
 ###########################################################
+LOCAL_DAILY_API = "http://localhost:8000/word-of-the-day/"
 
-API_GUESS = "https://wordle-api-kappa.vercel.app/"
-
-def get_feedback_from_api(guess):
-    """Call Wordle API to get feedback for the guess."""
-    r = requests.post(API_GUESS + guess).json()
-
+def get_feedback_from_daily_api(guess):
+    r = requests.post(LOCAL_DAILY_API + guess.upper()).json()
     if not r.get("is_word_in_list", True):
         return None
-
     if r.get("is_correct", False):
         return "GGGGG"
-
     fb = []
     for info in r["character_info"]:
         if info["scoring"]["correct_idx"]:
@@ -25,25 +21,42 @@ def get_feedback_from_api(guess):
             fb.append("Y")
         else:
             fb.append("B")
-
     return "".join(fb)
 
 ###########################################################
-# 2) LOAD OFFICIAL WORDLIST
+# 1b) LOCAL RANDOM WORD API
 ###########################################################
+LOCAL_RANDOM_API = "http://localhost:8000/random-word/"
 
-WORDLIST_URL = "https://raw.githubusercontent.com/Kinkelin/WordleCompetition/main/data/official/combined_wordlist.txt"
+def get_feedback_from_random_api(guess):
+    r = requests.post(LOCAL_RANDOM_API + guess.upper()).json()
+    if not r.get("is_word_in_list", True):
+        return None
+    if r.get("is_correct", False):
+        return "GGGGG"
+    fb = []
+    for info in r["character_info"]:
+        if info["scoring"]["correct_idx"]:
+            fb.append("G")
+        elif info["scoring"]["in_word"]:
+            fb.append("Y")
+        else:
+            fb.append("B")
+    return "".join(fb)
 
+###########################################################
+# 2) LOAD WORDLIST FROM PROJECT ROOT
+###########################################################
 def load_wordlist():
-    words = requests.get(WORDLIST_URL).text.splitlines()
-    words = [w.strip().lower() for w in words if len(w) == 5]
-    print(f"Loaded {len(words)} words from official list.")
+    file_path = os.path.join(os.path.dirname(__file__), "..", "word_list.txt")
+    with open(file_path, "r", encoding="utf-8") as f:
+        words = [w.strip().lower() for w in f.readlines() if len(w.strip()) == 5]
+    print(f"Loaded {len(words)} words from word_list.txt in project root.")
     return words
 
 ###########################################################
 # 3) CSP SOLVER
 ###########################################################
-
 class WordleSolver:
     def __init__(self, wordlist):
         self.candidates = list(wordlist)
@@ -59,7 +72,6 @@ class WordleSolver:
                 seen[ch] += 1
         for ch, n in seen.items():
             self.min_count[ch] = max(self.min_count[ch], n)
-
         for i, (g, f) in enumerate(zip(guess, fb)):
             if f == 'G':
                 self.fixed[i] = g
@@ -71,7 +83,6 @@ class WordleSolver:
                 else:
                     self.max_count[g] = self.min_count[g]
                 self.forbidden_pos[i].add(g)
-
         self.filter()
 
     def matches(self, word):
@@ -81,7 +92,6 @@ class WordleSolver:
         for i, forb in self.forbidden_pos.items():
             if word[i] in forb:
                 return False
-
         wc = Counter(word)
         for ch, c in self.min_count.items():
             if wc[ch] < c:
@@ -89,7 +99,6 @@ class WordleSolver:
         for ch, c in self.max_count.items():
             if wc[ch] > c:
                 return False
-
         return True
 
     def filter(self):
@@ -100,45 +109,9 @@ class WordleSolver:
         for w in self.candidates:
             for ch in set(w):
                 freq[ch] += 1
-
         scored = []
         for w in self.candidates:
             score = sum(freq[ch] for ch in set(w))
             scored.append((score, w))
-
         scored.sort(reverse=True)
         return [w for _, w in scored[:5]]
-
-###########################################################
-# 4) MAIN LOOP (does NOT know the answer)
-###########################################################
-
-def main():
-    print("=== WORDLE SOLVER — no cheating ===\n")
-
-    wordlist = load_wordlist()
-    solver = WordleSolver(wordlist)
-
-    guess = "crane"
-    step = 1
-
-    while True:
-        print(f"\nGuess #{step}: {guess.upper()}")
-        fb = get_feedback_from_api(guess)
-        print("Feedback:", fb)
-
-        if fb == "GGGGG":
-            print("\n🎉 Solved! Word =", guess.upper())
-            break
-
-        solver.apply_feedback(guess, fb)
-        print(f"Remaining candidates: {len(solver.candidates)}")
-
-        suggestions = solver.suggest()
-        print("Suggestions:", suggestions)
-
-        guess = suggestions[0]
-        step += 1
-
-if __name__ == "__main__":
-    main()
