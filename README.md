@@ -34,18 +34,16 @@ Wordle est un jeu de mots dans lequel à chaque tentative de mot, on obtient des
 
 ---
 
-# Wordle Solver Project
+# Projet Wordle Solver
 
-This project is a **Wordle Solver and Visualizer** with a FastAPI backend and a simple HTML/JS frontend.  
-It allows you to:
+Ce projet est un **solveur et visualiseur Wordle** avec un backend FastAPI et un frontend simple en HTML/JS.  
+Il permet de :
 
-- Play the **Daily Wordle**
-- Play a **Random Wordle**
-- See the solver automatically solve the word step by step with visual feedback
+- Jouer au **Wordle quotidien (Daily Wordle)**
+- Jouer au **Wordle aléatoire (Random Wordle)**
+- Voir le solveur résoudre automatiquement le mot étape par étape avec un retour visuel
 
----
-
-## 📂 Project Structure
+## 📂 Structure du projet
 
 project-root/
 │
@@ -61,50 +59,40 @@ project-root/
 │
 ├─ word_list.txt
 ├─ requirements.txt
-├─ README.me
-└─ launch.py # Script to start the project
+├─ README.md
+└─ launch.py # Script pour lancer le projet
 
-## 🚀 Running the Project Locally
+## 🚀 Lancer le projet localement
 
-The project includes a single launch.py script that:
+Le projet inclut un seul script `launch.py` qui :
 
-Starts the FastAPI backend (Api_wordle/main.py)
+1. Installe les dépendances Python depuis `requirements.txt`
+2. Démarre le **backend FastAPI** (port par défaut 5000)
+3. Démarre le **serveur HTTP du frontend** (port par défaut 8080)
+4. Ouvre automatiquement le frontend dans votre navigateur par défaut à : `http://127.0.0.1:8080/` (sert `index.html` par défaut)
 
-Opens the frontend in your default browser
-
-Run:
+Exécutez depuis le dossier racine du projet :
 python launch.py
-at the root of the project.
 
-This will:
+## 🔧 Configuration des ports
 
-- Install Python dependencies from requirements.txt.
+En haut de launch.py, vous pouvez modifier les ports si nécessaire :
 
-- Start the FastAPI backend (default port 5000).
+API_PORT = 5000       # Port du backend FastAPI
+FRONTEND_PORT = 8080  # Port du serveur HTTP du frontend
 
-- Start the frontend HTTP server (default port 8080).
+Si un port est déjà utilisé, changez-le et relancez le script.
 
-- Automatically open the frontend in your default browser at: http://127.0.0.1:8080/ (serves index.html by default).
+## 🔹 Utilisation du frontend
+Si le frontend ne s’ouvre pas automatiquement, ouvrez :
+http://127.0.0.1:8080/
 
-##  🔧 Configuring Ports
+Cliquez sur :
 
-At the top of launch.py you can change:
+- 🟦 Daily Wordle – sélectionne le mot du jour
 
-- API_PORT = 5000       # Port for FastAPI backend
-- FRONTEND_PORT = 8080  # Port for frontend HTTP server
+- 🟩 Random Wordle – génère un mot aléatoire
 
-If a port is already used, change it here and restart the script.
-
-## 🔹 Using the Frontend
-
-Open the frontend if it didn’t open automatically: frontend/index.html
-
-Click:
-
-🟦 Daily Wordle – selects the word of the day
-
-🟩 Random Wordle – generates a random word
-
-▶ Solve – runs the solver and shows each step with colored feedback
+- ▶ Solve – lance le solveur et affiche chaque étape avec retour coloré (vert, jaune, gris)
 
 ---
