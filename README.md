@@ -32,14 +32,79 @@ Wordle est un jeu de mots dans lequel à chaque tentative de mot, on obtient des
 - API OpenAI ou modèles locaux pour l'intégration LLM
 - Interface web avec React/Vue pour une expérience interactive
 
-pip install -r requirements.txt
+---
 
-pip install flask
-pip install flask-cors
+# Wordle Solver Project
 
-python server.py
-cd frontend
-python -m http.server 8000
+This project is a **Wordle Solver and Visualizer** with a FastAPI backend and a simple HTML/JS frontend.  
+It allows you to:
 
-si pb avec api reload:
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+- Play the **Daily Wordle**
+- Play a **Random Wordle**
+- See the solver automatically solve the word step by step with visual feedback
+
+---
+
+## 📂 Project Structure
+
+project-root/
+│
+├─ Api_wordle/
+│ ├─ main.py
+│ ├─ utils.py
+│
+├─ Solveur_wordle/
+│ └─ Solveur_Wordle.py
+│
+├─ frontend/
+│ └─ index.html
+│
+├─ word_list.txt
+├─ requirements.txt
+├─ README.me
+└─ launch.py # Script to start the project
+
+## 🚀 Running the Project Locally
+
+The project includes a single launch.py script that:
+
+Starts the FastAPI backend (Api_wordle/main.py)
+
+Opens the frontend in your default browser
+
+Run:
+python launch.py
+at the root of the project.
+
+This will:
+
+- Install Python dependencies from requirements.txt.
+
+- Start the FastAPI backend (default port 5000).
+
+- Start the frontend HTTP server (default port 8080).
+
+- Automatically open the frontend in your default browser at: http://127.0.0.1:8080/ (serves index.html by default).
+
+##  🔧 Configuring Ports
+
+At the top of launch.py you can change:
+
+- API_PORT = 5000       # Port for FastAPI backend
+- FRONTEND_PORT = 8080  # Port for frontend HTTP server
+
+If a port is already used, change it here and restart the script.
+
+## 🔹 Using the Frontend
+
+Open the frontend if it didn’t open automatically: frontend/index.html
+
+Click:
+
+🟦 Daily Wordle – selects the word of the day
+
+🟩 Random Wordle – generates a random word
+
+▶ Solve – runs the solver and shows each step with colored feedback
+
+---
