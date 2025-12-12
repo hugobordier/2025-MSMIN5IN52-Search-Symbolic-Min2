@@ -31,3 +31,11 @@ Wordle est un jeu de mots dans lequel à chaque tentative de mot, on obtient des
 - Dictionnaires de mots français/anglais pour les domaines de variables
 - API OpenAI ou modèles locaux pour l'intégration LLM
 - Interface web avec React/Vue pour une expérience interactive
+
+
+pip install flask
+pip install flask-cors
+
+python server.py
+cd frontend
+python -m http.server 8000

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Wordle Solver Visualizer</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body { background: #f3f4f6; }
+        .tile {
+            width: 45px; height: 45px;
+            display: flex; justify-content: center; align-items: center;
+            font-weight: bold; font-size: 1.3rem;
+            margin: 3px; border-radius: 6px;
+        }
+        .B { background: #787c7e; color: white; }
+        .Y { background: #c9b458; color: white; }
+        .G { background: #6aaa64; color: white; }
+    </style>
+</head>
+
+<body class="p-10 flex flex-col items-center">
+
+    <h1 class="text-4xl font-bold mb-6">🔍 Wordle Solver Visualizer</h1>
+
+    <button id="runBtn" class="px-5 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">
+        ▶ Lancer le solveur
+    </button>
+
+    <div id="output" class="mt-10 w-full max-w-xl space-y-6"></div>
+
+    <script>
+        document.getElementById("runBtn").onclick = async () => {
+            const output = document.getElementById("output");
+            output.innerHTML = "<p class='text-gray-600'>Solving…</p>";
+
+            const res = await fetch("http://localhost:5000/run");
+            const data = await res.json();
+
+            output.innerHTML = "";
+
+            let delay = 0;
+
+            data.steps.forEach(step => {
+                setTimeout(() => {
+                    const row = document.createElement("div");
+                    row.className = "p-4 bg-white shadow rounded-lg";
+
+                    row.innerHTML = `
+                        <h2 class="font-bold text-lg mb-2">Étape ${step.step}</h2>
+                        <div class="flex mb-3">
+                            ${step.guess.split("").map((c,i) =>
+                                `<div class="tile ${step.feedback[i]}">${c.toUpperCase()}</div>`
+                            ).join("")}
+                        </div>
+                        <p class="text-gray-600">Feedback : <b>${step.feedback}</b></p>
+                    `;
+
+                    output.appendChild(row);
+                }, delay);
+
+                delay += 800;
+            });
+        };
+    </script>
+
+</body>
+</html>

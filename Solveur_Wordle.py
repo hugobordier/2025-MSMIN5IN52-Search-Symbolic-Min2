@@ -119,7 +119,7 @@ def main():
     wordlist = load_wordlist()
     solver = WordleSolver(wordlist)
 
-    guess = "crane"  # very strong opener
+    guess = "crane"
     step = 1
 
     while True:
