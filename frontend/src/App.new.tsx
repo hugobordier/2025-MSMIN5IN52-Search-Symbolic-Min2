@@ -72,7 +72,7 @@ function scheduleToEvents(
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem("darkMode");
-    return saved === null ? true : saved === "true"; // Dark mode par défaut
+    return saved === "true";
   });
   const [activeTab, setActiveTab] = useState<Tab>("config");
 
