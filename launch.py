@@ -10,7 +10,7 @@ import socketserver
 # =========================================================
 # CONFIGURABLE PORTS
 # =========================================================
-API_PORT = 5000       # Port for FastAPI backend
+API_PORT = 5001       # Port for FastAPI backend
 FRONTEND_PORT = 8081  # Port for frontend HTTP server
 
 ROOT_DIR = os.getcwd()
@@ -30,13 +30,25 @@ fastapi_cmd = [
     "Api_wordle.main:app",
     "--host", "127.0.0.1",
     "--port", str(API_PORT),
-    "--reload"
+    # "--reload"  # Décommente si tu veux le rechargement automatique
 ]
 
+# Use PIPE to capture stdout/stderr
 fastapi_proc = subprocess.Popen(
     fastapi_cmd,
-    cwd=ROOT_DIR
+    cwd=ROOT_DIR,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.STDOUT,
+    text=True,
+    bufsize=1
 )
+
+# Thread to print backend logs in real time
+def print_backend_logs(proc):
+    for line in proc.stdout:
+        print(line, end="")  # already contains newline
+
+threading.Thread(target=print_backend_logs, args=(fastapi_proc,), daemon=True).start()
 
 # ---------- Start Frontend HTTP server ----------
 def serve_frontend():
@@ -73,3 +85,4 @@ try:
 except KeyboardInterrupt:
     print("\n❌ Shutting down...")
     fastapi_proc.terminate()
+    fastapi_proc.wait()

@@ -125,6 +125,7 @@ def guess_random_word(word: str):
 # =========================================================
 @app.get("/run-daily")
 def run_solver_daily():
+    print("RUN DAILY CALLED — LLM SHOULD BE USED")
     solver = WordleSolver(word_list)
     guess = "crane"
     steps = []
@@ -152,6 +153,7 @@ def run_solver_daily():
         solver.apply_feedback(guess, feedback)
 
         # ✅ Ici on utilise l'agent LLM pour choisir le prochain mot
+        print("ABOUT TO CALL LLM")
         guess = llm_choose_next_guess(solver, steps)
 
         step += 1
