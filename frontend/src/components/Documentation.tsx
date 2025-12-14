@@ -14,6 +14,11 @@ type DocFile = {
 
 const DOC_FILES: DocFile[] = [
   { name: "README", title: "📖 Guide Principal", path: "/docs/README.md" },
+  {
+    name: "ARCHITECTURE_TECHNIQUE",
+    title: "🏗️ Architecture Technique",
+    path: "/docs/ARCHITECTURE_TECHNIQUE.md",
+  },
   { name: "DOCKER", title: "🐳 Docker", path: "/docs/DOCKER.md" },
   {
     name: "GUIDE_UTILISATION",
