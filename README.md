@@ -74,6 +74,12 @@ Le projet inclut un seul script `launch.py` qui :
 Exécutez depuis le dossier racine du projet :
 python launch.py
 
+Pour utiliser l'intégration LLM :
+1. Créer un fichier config.py dans la base du projet
+2. Générer une clé (https://ai.google.dev/gemini-api/docs/api-key?hl=fr)
+3. Mettre dans config.py : GEMINI_API_KEY = "votre clé"
+4. Lancer le projet comme indiqué plus haut
+
 ## 🔧 Configuration des ports
 
 En haut de launch.py, vous pouvez modifier les ports si nécessaire :
